@@ -1,24 +1,29 @@
-import React, { useContext, useState } from "react";
-import { Context } from "../store/appContext";
+import React, { useContext, useState, useEffect } from "react";
 import { Link, Redirect } from "react-router-dom";
+import PropTypes from "prop-types";
+import { Context } from "../store/appContext";
 
-export const AddContact = () => {
-	const { actions } = useContext(Context);
-	const [name, setName] = useState("");
-	const [email, setEmail] = useState("");
-	const [phone, setPhone] = useState("");
-	const [address, setAddress] = useState("");
+export const UpdateContact = props => {
+	const { actions, store } = useContext(Context);
+	const [name, setName] = useState(store.contact ? store.contact.full_name : "");
+	const [email, setEmail] = useState(store.contact ? store.contact.email : "");
+	const [phone, setPhone] = useState(store.contact ? store.contact.phone : "");
+	const [address, setAddress] = useState(store.contact ? store.contact.address : "");
 
 	const handleSubmit = e => {
 		e.preventDefault();
-		actions.addContact(name, email, phone, address);
+		actions.updateContact(props.match.params.id, name, email, phone, address);
 		return <Redirect to="/" />;
 	};
+
+	useEffect(() => {
+		actions.getContact(props.match.params.id, setName, setEmail, setPhone, setAddress);
+	}, []);
 
 	return (
 		<div className="container">
 			<div>
-				<h1 className="text-center mt-5">Add a new contact</h1>
+				<h1 className="text-center mt-5">Update contact information</h1>
 				<form onSubmit={e => handleSubmit(e)}>
 					<div className="form-group">
 						<label>Full Name</label>
@@ -27,7 +32,7 @@ export const AddContact = () => {
 							value={name}
 							onChange={e => setName(e.target.value)}
 							className="form-control"
-							placeholder="Full Name"
+							placeholder="Full name"
 						/>
 					</div>
 					<div className="form-group">
@@ -37,7 +42,7 @@ export const AddContact = () => {
 							value={email}
 							onChange={e => setEmail(e.target.value)}
 							className="form-control"
-							placeholder="Enter email"
+							placeholder="E-mail"
 						/>
 					</div>
 					<div className="form-group">
@@ -47,7 +52,7 @@ export const AddContact = () => {
 							value={phone}
 							onChange={e => setPhone(e.target.value)}
 							className="form-control"
-							placeholder="Enter phone"
+							placeholder="Phone"
 						/>
 					</div>
 					<div className="form-group">
@@ -57,7 +62,7 @@ export const AddContact = () => {
 							value={address}
 							onChange={e => setAddress(e.target.value)}
 							className="form-control"
-							placeholder="Enter address"
+							placeholder="Address"
 						/>
 					</div>
 					<button type="submit" className="btn btn-primary form-control">
@@ -70,4 +75,8 @@ export const AddContact = () => {
 			</div>
 		</div>
 	);
+};
+
+UpdateContact.propTypes = {
+	match: PropTypes.object
 };
